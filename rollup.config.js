@@ -79,7 +79,7 @@ export default {
     (!isProd && serve({
       host: 'localhost',
       port: 3000,
-      open: true,
+      open: false,
       contentBase: ['public'],
     })),
     (!isProd && livereload({
