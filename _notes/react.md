@@ -63,17 +63,27 @@ onClick={() => {
 
 跟踪不可变数据的变化相对来说就容易多了。如果发现对象变成了一个新对象，那么我们就可以说对象发生改变了。
 
-####
-
 ###### 确定在 React 中何时重新渲染
 
 不可变性最主要的优势在于它可以帮助我们在 React 中创建 _pure components_。我们可以很轻松的确定不可变数据是否发生了改变，从而确定何时对组件进行重新渲染。
 
 #### 函数组件
 
-TODO
+如果你想写的组件只包含一个 render 方法，并且不包含 state，那么使用函数组件就会更简单
 
-<https://zh-hans.reactjs.org/tutorial/tutorial.html#function-components>
+```js
+function Square(props) {
+  return (
+    <button className="square" onClick={props.onClick}>
+      {props.value}
+    </button>
+  );
+}
+```
+
+- this 指向
+
+- onClick 缩写
 
 ---
 

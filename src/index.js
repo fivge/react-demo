@@ -2,48 +2,33 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-class Square extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // value: null
-      // value: this.props.value
-    };
-  }
-
-  render() {
-    return (
-      <button
-        className="square"
-        onClick={() => {
-          this.props.onClick();
-          // this.setState({ value: 'X' });
-        }}
-      >
-        {/* {this.state.value} */}
-        {this.props.value}
-      </button>
-    );
-  }
+function Square(props) {
+  return (
+    <button className="square" onClick={props.onClick}>
+      {props.value}
+    </button>
+  );
 }
 
 class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill(null)
-      // squares: ['O', null, 'X', 'X', 'X', 'O', 'O', null, null]
+      squares: Array(9).fill(null),
+      // squares: ['O', null, 'X', 'X', 'X', 'O', 'O', null, null],
+      xIsNext: true
     };
   }
 
   handleClick = i => {
-    // this.state.squares[i] = 'X';
-
-    // const squares = this.state.squares;
-
     const squares = this.state.squares.slice();
-    squares[i] = 'X';
-    this.setState({ squares });
+
+    if (calculateWinner(this.state.squares) || squares[i]) {
+      return;
+    }
+
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({ squares, xIsNext: !this.state.xIsNext });
   };
 
   renderSquare(i) {
@@ -51,7 +36,13 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if (winner) {
+      status = `Winner: ${winner}`;
+    } else {
+      status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
+    }
 
     return (
       <div>
@@ -92,24 +83,24 @@ class Game extends React.Component {
   }
 }
 
-// class ShoppingList extends React.Component {
-//   render() {
-//     return (
-//       <div className="shopping-list">
-//         <h1>Shopping List for {this.props.name}</h1>
-//         <ul>
-//           <li>Instagram</li>
-//           <li>WhatsApp</li>
-//           <li>Oculus</li>
-//         </ul>
-//       </div>
-//     );
-//   }
-// }
-
-// 用法示例: <ShoppingList name="Mark" />
-// ReactDOM.render(<ShoppingList name="Mark" />, document.getElementById("root"));
-
-// ========================================
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
+}
 
 ReactDOM.render(<Game />, document.getElementById('root'));
