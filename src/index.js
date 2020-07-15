@@ -44,22 +44,17 @@ class Game extends React.Component {
     this.state = {
       history: [
         {
-          squares: Array(9).fill(null)
+          squares: Array(9).fill(null),
+          location: 0
         }
       ],
+      stepNumber: 0,
       xIsNext: true
     };
   }
 
   handleClick = i => {
-    // const squares = this.state.history[this.state.history.length - 1].squares.slice();
-    // if (calculateWinner(squares) || squares[i]) {
-    //   return;
-    // }
-    // squares[i] = this.state.xIsNext ? 'X' : 'O';
-    // this.setState({ history: [...this.state.history, { squares }], xIsNext: !this.state.xIsNext });
-    //...
-    const history = this.state.history;
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
@@ -69,19 +64,25 @@ class Game extends React.Component {
     this.setState({
       history: history.concat([
         {
-          squares: squares
+          squares: squares,
+          location: i
         }
       ]),
-      stepNumber: 0,
+      stepNumber: history.length,
       xIsNext: !this.state.xIsNext
     });
   };
 
-  jumpTo = step => {};
+  jumpTo = step => {
+    this.setState({
+      stepNumber: step,
+      xIsNext: step % 2 === 0
+    });
+  };
 
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
+    const current = history[this.state.stepNumber];
 
     const winner = calculateWinner(current.squares);
     let status;
@@ -92,7 +93,8 @@ class Game extends React.Component {
     }
 
     const moves = history.map((step, move) => {
-      const desc = move ? move : 'first';
+      const desc = move ? 'Go to move #' + move : 'Go to game start';
+      const { col, row } = getLocation(step.location);
       return (
         <li key={move}>
           <button
@@ -102,6 +104,9 @@ class Game extends React.Component {
           >
             {desc}
           </button>
+          <span>
+            ({col},{row})
+          </span>
         </li>
       );
     });
@@ -139,5 +144,14 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
+let getLocation = step => {
+  if (step === 0) {
+    return { col: -1, row: -1 };
+  }
+  let col = (step % 3) + 1;
+  let row = (step - (step % 3)) / 3 + 1;
+  return { col, row };
+};
 
 ReactDOM.render(<Game />, document.getElementById('root'));
